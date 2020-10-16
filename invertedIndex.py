@@ -9,6 +9,7 @@ import argparse
 import json
 import sys
 from os import path
+import itertools
 
 #Use this helper function to test a small amount of data
 def test_token_list():
@@ -33,7 +34,7 @@ def test_token_list():
         raw = raw.replace("\u0003", '')
         for c in string.punctuation:
             raw = raw.replace(c, " ")
-        #raw = re.sub(r"\d", "", raw)
+        raw = re.sub(r"\d", "", raw)
         tokens = word_tokenize(raw)
         for token in tokens:
             token_list.append((token, doc_id))
@@ -105,8 +106,41 @@ def sort_unique(unsorted_list):
         json.dump(unique_tokens, myFile)
 
 
+def generate_posting_list(sorted_list):
+
+    f = open(sorted_list)
+    file = f.read()
+    res = json.loads(file)
+    postings = []
+    naive_indexer = []
+
+    #print to txt to pretty print
+    naive_indexer_text = open("naive_indexer.txt", 'w')
+    cycle = itertools.cycle(res)
+    next(cycle)
+
+    for token in res:
+        peek_token = next(cycle)
+        if token[0] == peek_token[0]:
+            postings.append(token[1])
+        else:
+            if len(postings) > 0:
+                postings.append(token[1])
+                naive_indexer.append([token[0], [len(postings), postings.copy()]])
+                print(json.dumps([token[0], [len(postings), postings.copy()]]), file=naive_indexer_text)
+                postings.clear()
+            else:
+                naive_indexer.append([token[0], [1, [token[1]]]])
+                print(json.dumps([token[0], [1, [token[1]]]]), file=naive_indexer_text)
+
+    with open("naive_indexer.json", mode="w", encoding="utf-8") as myFile:
+        json.dump(naive_indexer, myFile)
 
 
+#test_token_list()
 #generate_token_list()
 
-sort_unique("unsorted_token_list.json")
+#sort_unique("unsorted_token_list.json")
+
+generate_posting_list("sorted_unique_tokens.json")
+
