@@ -12,7 +12,7 @@ def generate_token_list():
     # load reuters files with the help of NLTK's PlaintextCorpusReader
     sgm_files = PlaintextCorpusReader("reuters", '.*\.sgm')
     token_list = []
-    unsorted_token_list = open("unsorted_token_list.txt", 'w')  # use for pretty print the list
+    unsorted_token_list = open("files/unsorted_token_list.txt", 'w')  # use for pretty print the list
 
     for fileid in sgm_files.fileids():
         f = open("reuters" + '/' + fileid)
@@ -22,7 +22,7 @@ def generate_token_list():
         for document_text in parsed_sgm.find_all('reuters'):
             block_tokenizer(document_text, token_list, unsorted_token_list)
 
-    with open("unsorted_token_list.json", mode="w", encoding="utf-8") as myFile:
+    with open("files/unsorted_token_list.json", mode="w", encoding="utf-8") as myFile:
         json.dump(token_list, myFile)
 
 
@@ -48,7 +48,7 @@ def sort_tokens(unsorted_list):
     res = json.loads(file)
     sorted_list = sorted(res, key=lambda x: x[0])
 
-    with open("sorted_tokens.json", mode="w", encoding="utf-8") as myFile:
+    with open("files/sorted_tokens.json", mode="w", encoding="utf-8") as myFile:
         json.dump(sorted_list, myFile)
 
 
@@ -63,7 +63,7 @@ def remove_duplicates(sorted_list):
     unique_tokens.append((term, doc_id))
 
     #print to txt to pretty print
-    unique_list = open("sorted_unique_tokens.txt", 'w')
+    unique_list = open("files/sorted_unique_tokens.txt", 'w')
     print(json.dumps([term, doc_id]), file=unique_list)
 
     for token in sorted_list_res:
@@ -80,7 +80,7 @@ def remove_duplicates(sorted_list):
             unique_tokens.append((token[0], token[1]))
             print(json.dumps([token[0], token[1]]), file=unique_list)
 
-    with open("sorted_unique_tokens.json", mode="w", encoding="utf-8") as myFile:
+    with open("files/sorted_unique_tokens.json", mode="w", encoding="utf-8") as myFile:
         json.dump(unique_tokens, myFile)
 
 
@@ -93,7 +93,7 @@ def generate_posting_list(sorted_list):
     naive_indexer = []
 
     #print to txt to pretty print
-    naive_indexer_text = open("naive_indexer.txt", 'w')
+    naive_indexer_text = open("files/naive_indexer.txt", 'w')
     cycle = itertools.cycle(res)
     next(cycle)
 
@@ -111,7 +111,7 @@ def generate_posting_list(sorted_list):
                 naive_indexer.append([token[0], [1, [token[1]]]])
                 print(json.dumps([token[0], [1, [token[1]]]]), file=naive_indexer_text)
 
-    with open("naive_indexer.json", mode="w", encoding="utf-8") as myFile:
+    with open("files/naive_indexer.json", mode="w", encoding="utf-8") as myFile:
         json.dump(naive_indexer, myFile)
 
 
@@ -126,7 +126,7 @@ def test_token_list():
     f = open("reuters/reut2-000.sgm")
     sgm_file = f.read()
     parsed_sgm = BeautifulSoup(sgm_file, 'html.parser')
-    unsorted_token_list = open("unsorted_token_list.txt", 'w') #use for pretty print the list
+    unsorted_token_list = open("files/unsorted_token_list.txt", 'w') #use for pretty print the list
 
     for document_text in parsed_sgm.find_all('reuters'):
         doc_id = int(document_text['newid'])
@@ -144,16 +144,16 @@ def test_token_list():
             token_list.append((token, doc_id))
             print(json.dumps([token, doc_id]), file=unsorted_token_list)
 
-    with open("unsorted_token_list.json", mode="w", encoding="utf-8") as myFile:
+    with open("files/unsorted_token_list.json", mode="w", encoding="utf-8") as myFile:
         json.dump(token_list, myFile)
 
 
 generate_token_list()
 
-sort_tokens("unsorted_token_list.json")
+sort_tokens("files/unsorted_token_list.json")
 
-remove_duplicates("sorted_tokens.json")
+remove_duplicates("files/sorted_tokens.json")
 
-generate_posting_list("sorted_unique_tokens.json")
+generate_posting_list("files/sorted_unique_tokens.json")
 
 #test_token_list()
