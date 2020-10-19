@@ -120,7 +120,6 @@ def test_token_list():
 
     # load reuters files with the help of NLTK's PlaintextCorpusReader
     sgm_files = PlaintextCorpusReader("reuters", '.*\.sgm')
-    sgm_fileIds = sgm_files.fileids() #TO REMOVE LATER
     token_list = []
 
     f = open("reuters/reut2-000.sgm")
