@@ -17,8 +17,8 @@ def search_query(query):
     return sorted_list
 
 
-def dump_results(query, results):
-    q = {query: results}
+def dump_results(query, postings):
+    q = {query: postings}
 
     if os.path.isfile("files/sampleQueries.json"):
         f = open("files/sampleQueries.json")
@@ -41,14 +41,14 @@ def get_query():
             print("please enter your query (only single term): ")
             query = input()
 
-        results = search_query(query)
+        postings = search_query(query)
 
-        if not results:
+        if not postings:
             print("Your query was not found in the index ")
         else:
             print("Your query was found in the following document IDs : ")
-            print(*results, sep=", ")
-            dump_results(query, results)
+            print(*postings, sep=", ")
+            dump_results(query, postings)
 
         print("Do you want to query again? (Y/N) ")
         answer = input()
