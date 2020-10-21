@@ -1,4 +1,5 @@
 import json
+import os.path
 
 
 def search_query(query):
@@ -12,7 +13,21 @@ def search_query(query):
         if lower_case == token[0].lower() or lower_case in token[0].lower():
             doc_ids.extend(token[1][1])
 
-    return doc_ids
+    sorted_list = sorted(doc_ids)
+    return sorted_list
+
+
+def dump_results(query, results):
+    q = {query: results}
+
+    if os.path.isfile("files/sampleQueries.json"):
+        f = open("files/sampleQueries.json")
+        file = f.read()
+        sample_queries = json.loads(file)
+        sample_queries.update(q)
+        json.dump(sample_queries, open("files/sampleQueries.json", "w", encoding="utf-8"), indent=3)
+    else:
+        json.dump(q, open("files/sampleQueries.json", "w", encoding="utf-8"), indent=3)
 
 
 def get_query():
@@ -32,7 +47,8 @@ def get_query():
             print("Your query was not found in the index ")
         else:
             print("Your query was found in the following document IDs : ")
-            print(*results, sep="\n")
+            print(*results, sep=", ")
+            dump_results(query, results)
 
         print("Do you want to query again? (Y/N) ")
         answer = input()
@@ -44,4 +60,3 @@ def get_query():
 
 
 get_query()
-
